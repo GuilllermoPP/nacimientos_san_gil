@@ -2,6 +2,34 @@ import pandas as pd
 
 BORN_LIVE_FILE = "nacidos_vivos.csv"
 
+
+def load_dataset(file_path):
+    try:
+        return pd.read_csv(
+            file_path,
+            parse_dates=PARSE_DATE_COLUMNS,
+            dtype=TEXT_COLUMNS
+        )
+
+    except FileNotFoundError:
+        raise FileNotFoundError(
+            f"No existe el archivo: {file_path}"
+        )
+
+    except pd.errors.ParserError:
+        raise ValueError(
+            "El archivo no tiene un formato CSV válido"
+        )
+
+
+def validate_structure(df, required_columns):
+    missing = required_columns - set(df.columns)
+
+    if missing:
+        raise ValueError(
+            f"Columnas faltantes: {sorted(missing)}"
+        )
+
 # Definimos las columnas de texto para que pandas las lea como string, ya que por defecto las lee como object, lo que puede generar problemas al momento de hacer
 # análisis de datos.
 EPS_MAPPING = {
@@ -9,11 +37,9 @@ EPS_MAPPING = {
     
     'ASMET SALUD EPS SAS': 'ASMET SALUD',
     
-    'ASOCIACIÓN MUTUAL SER EMPRESA SOLIDARIA DE SALUD E.S.S':
-        'MUTUAL SER',
+    'ASOCIACIÓN MUTUAL SER EMPRESA SOLIDARIA DE SALUD E.S.S': 'MUTUAL SER',
     
-    'CAJA DE COMPENSACION FAMILIAR  CAJACOPI ATLANTICO':
-        'CAJACOPI',
+    'CAJA DE COMPENSACION FAMILIAR  CAJACOPI ATLANTICO': 'CAJACOPI',
     
     'CAPITAL SALUD E.P.S.': 'CAPITAL SALUD',
     
@@ -27,17 +53,13 @@ EPS_MAPPING = {
     'E.P.S. SANITAS': 'SANITAS',
     'EPS SANITAS - CM': 'SANITAS',
     
-    'EMPRESA PROMOTORA DE SALUD ECOOPSOS EPS S.A.S.':
-        'ECOOPSOS',
+    'EMPRESA PROMOTORA DE SALUD ECOOPSOS EPS S.A.S.':'ECOOPSOS',
     
-    'EPS Y MEDICINA PREPAGADA SURAMERICANA S.A':
-        'SURAMERICANA',
+    'EPS Y MEDICINA PREPAGADA SURAMERICANA S.A': 'SURAMERICANA',
     
-    'FAMISANAR E.P.S. LTDA - CAFAM - COLSUBSIDIO':
-        'COLSUBSIDIO',
+    'FAMISANAR E.P.S. LTDA - CAFAM - COLSUBSIDIO': 'COLSUBSIDIO',
     
-    'FAMISANAR E.P.S. LTDA - CAFAM - COLSUBSIDIO -CM':
-        'COLSUBSIDIO',
+    'FAMISANAR E.P.S. LTDA - CAFAM - COLSUBSIDIO -CM': 'COLSUBSIDIO',
     
     'FUERZAS MILITARES': 'FUERZAS MILITARES',
     
@@ -54,6 +76,23 @@ EPS_MAPPING = {
     
     'SALUD TOTAL E.P.S. -CM': 'SALUD TOTAL',
     'SALUD TOTAL S.A.': 'SALUD TOTAL'
+}
+
+
+
+REQUIRED_COLUMNS = {
+    'Fecha_Nacimiento',
+    'Departamento Nacimiento',
+    'Municipio',
+    'Area',
+    'Sexo',
+    'Tiempo_Gestación',
+    'Tipo_Parto',
+    'Multiplicidad_Embarazo',
+    'Régimen_Seguridad_Social',
+    'EPS',
+    'Peso',
+    'Periodo'
 }
 
 TEXT_COLUMNS = {'Departamento Nacimiento': 'string',
@@ -74,11 +113,14 @@ PARSE_DATE_COLUMNS = ['Fecha_Nacimiento']
 
 # Leemos el archivo CSV, especificando que la columna "Fecha_Nacimiento" debe ser parseada como fecha y las columnas de texto deben ser leídas como string.
 
-borns=pd.read_csv(
-    BORN_LIVE_FILE,
-    parse_dates=PARSE_DATE_COLUMNS,
-    dtype=TEXT_COLUMNS,
-)
+try:
+    borns = load_dataset(BORN_LIVE_FILE)
+    validate_structure(borns, REQUIRED_COLUMNS)
+
+    print("Dataset cargado correctamente")
+
+except Exception as e:
+    print(f"Proceso detenido: {e}")
 
 ## Hacemos limpieza de datos, reemplazando los valores de peso y periodo, para convertirlos a tipo numérico. En el caso de peso, reemplazamos la coma por un punto
 ## y en el caso de periodo, eliminamos la coma. Luego convertimos ambos a tipo numérico.
