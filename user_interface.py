@@ -1,7 +1,9 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 
 BORN_LIVE_FILE = "nacidos_vivos.csv"
 
+# Gestion de errores realizada con apoyo de chatGPT
 
 def load_dataset(file_path):
     try:
@@ -99,7 +101,7 @@ TEXT_COLUMNS = {'Departamento Nacimiento': 'string',
                 'Municipio': 'string',
                 'Area': 'string',
                 'Sexo': 'string',
-                'Tiempo_Gestación': 'string',
+
                 'Tipo_Parto': 'string',
                 'Multiplicidad_Embarazo': 'string',
                 'Régimen_Seguridad_Social': 'string',
@@ -127,9 +129,49 @@ except Exception as e:
 
 borns["Peso"] = borns["Peso"].str.replace(',', '.').astype("float64")
 borns["Periodo"] = borns["Periodo"].str.replace(',', '').astype("int64")
-borns['EPS_NORMALIZADA'] = borns['EPS'].replace(EPS_MAPPING)
+borns["EPS_NORMALIZADA"] = borns["EPS"].replace(EPS_MAPPING)
 
 
+
+
+# #Calculo de la fecha de fecundacion o engendramiento estimada sugerida por chat GPT la diferencia de 
+# borns["FECHA_CONCEPCION_ESTIMADA"] = (
+#     borns["Fecha_Nacimiento"]
+#     - pd.to_timedelta(borns["Tiempo_Gestación"] * 7, unit="D", errors="coerce")
+#     + pd.Timedelta(days=14)
+# )
+
+# borns['anio_concepcion'] = borns['FECHA_CONCEPCION_ESTIMADA'].dt.isocalendar().year
+# borns['semana_concepcion'] = borns['FECHA_CONCEPCION_ESTIMADA'].dt.isocalendar().week
+
+# patron_semanal = (
+#     borns.groupby(['anio_concepcion', 'semana_concepcion'])
+#          .size()
+#          .reset_index(name='cantidad')
+# )
+
+
+# plt.figure(figsize=(16, 7))
+
+# for anio in sorted(patron_semanal['anio_concepcion'].unique()):
+#     datos = patron_semanal[
+#         patron_semanal['anio_concepcion'] == anio
+#     ].sort_values('semana_concepcion')
+
+#     plt.plot(
+#         datos['semana_concepcion'],
+#         datos['cantidad'],
+#         marker='o',
+#         label=str(anio)
+#     )
+
+# plt.title('Concepciones estimadas por semana del año')
+# plt.xlabel('Semana')
+# plt.ylabel('Cantidad de concepciones')
+# plt.xticks(range(1, 54, 2))
+# plt.grid(True, alpha=0.3)
+# plt.legend(title='Año')
+# plt.show()
 
 print(borns.info())
 # print(borns['Peso'].value_counts())
