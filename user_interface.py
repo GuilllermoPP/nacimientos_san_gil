@@ -132,7 +132,35 @@ borns["Periodo"] = borns["Periodo"].str.replace(',', '').astype("int64")
 borns["EPS_NORMALIZADA"] = borns["EPS"].replace(EPS_MAPPING)
 
 
+# Columnas derivadas_______________________________________________________________
+BIN_MATERNAL_AGE=[0, 20, 35, float('inf')]
+LABELS_MATERNAL_AGE=[
+        "Adolescente",
+        "Edad reproductiva óptima",
+        "Edad materna avanzada"
+    ]
+borns["RANGO_EDAD_MATERNA"] = pd.cut(
+    borns["Edad_Madre"],
+    BIN_MATERNAL_AGE,
+    LABELS_MATERNAL_AGE,
+    right=False
+)
 
+BINS_GESTATIONAL_AGE_GROUP=[0, 28, 32, 37, 42, float('inf')]
+LABELS_GESTATIONAL_AGE_GROUP=[
+        'Prematuro extremo',
+        'Muy prematuro',
+        'Prematuro moderado a tardío',
+        'A término',
+        'Postérmino'
+    ]
+
+borns['grupo_edad_gestacional'] = pd.cut(
+    borns['Tiempo_Gestación'],
+    BINS_GESTATIONAL_AGE_GROUP,
+    LABELS_GESTATIONAL_AGE_GROUP,
+    right=False
+)
 
 # #Calculo de la fecha de fecundacion o engendramiento estimada sugerida por chat GPT la diferencia de 
 # borns["FECHA_CONCEPCION_ESTIMADA"] = (
