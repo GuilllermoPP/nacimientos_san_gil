@@ -131,7 +131,7 @@ borns["Peso"] = borns["Peso"].str.replace(',', '.').astype("float64")
 borns["Periodo"] = borns["Periodo"].str.replace(',', '').astype("int64")
 borns["EPS_NORMALIZADA"] = borns["EPS"].replace(EPS_MAPPING)
 
-
+print(borns['Peso'].value_counts())
 # Columnas derivadas_______________________________________________________________
 BIN_MATERNAL_AGE=[0, 20, 35, float('inf')]
 LABELS_MATERNAL_AGE=[
@@ -141,8 +141,8 @@ LABELS_MATERNAL_AGE=[
     ]
 borns["RANGO_EDAD_MATERNA"] = pd.cut(
     borns["Edad_Madre"],
-    BIN_MATERNAL_AGE,
-    LABELS_MATERNAL_AGE,
+    bins=BIN_MATERNAL_AGE,
+    labels=LABELS_MATERNAL_AGE,
     right=False
 )
 
@@ -157,51 +157,68 @@ LABELS_GESTATIONAL_AGE_GROUP=[
 
 borns['grupo_edad_gestacional'] = pd.cut(
     borns['Tiempo_Gestación'],
-    BINS_GESTATIONAL_AGE_GROUP,
-    LABELS_GESTATIONAL_AGE_GROUP,
+    bins=BINS_GESTATIONAL_AGE_GROUP,
+    labels=LABELS_GESTATIONAL_AGE_GROUP,
     right=False
 )
 
+
+
 # #Calculo de la fecha de fecundacion o engendramiento estimada sugerida por chat GPT la diferencia de 
-# borns["FECHA_CONCEPCION_ESTIMADA"] = (
-#     borns["Fecha_Nacimiento"]
-#     - pd.to_timedelta(borns["Tiempo_Gestación"] * 7, unit="D", errors="coerce")
-#     + pd.Timedelta(days=14)
-# )
+borns["FECHA_CONCEPCION_ESTIMADA"] = (
+    borns["Fecha_Nacimiento"]
+    - pd.to_timedelta(borns["Tiempo_Gestación"] * 7, unit="D", errors="coerce")
+    + pd.Timedelta(days=14)
+)
 
-# borns['anio_concepcion'] = borns['FECHA_CONCEPCION_ESTIMADA'].dt.isocalendar().year
-# borns['semana_concepcion'] = borns['FECHA_CONCEPCION_ESTIMADA'].dt.isocalendar().week
+borns['anio_concepcion'] = borns['FECHA_CONCEPCION_ESTIMADA'].dt.isocalendar().year
+borns['semana_concepcion'] = borns['FECHA_CONCEPCION_ESTIMADA'].dt.isocalendar().week
 
-# patron_semanal = (
-#     borns.groupby(['anio_concepcion', 'semana_concepcion'])
-#          .size()
-#          .reset_index(name='cantidad')
-# )
+patron_semanal = (
+    borns.groupby(['anio_concepcion', 'semana_concepcion'])
+         .size()
+         .reset_index(name='cantidad')
+)
 
 
-# plt.figure(figsize=(16, 7))
+plt.figure(figsize=(16, 7))
 
-# for anio in sorted(patron_semanal['anio_concepcion'].unique()):
-#     datos = patron_semanal[
-#         patron_semanal['anio_concepcion'] == anio
-#     ].sort_values('semana_concepcion')
+for anio in sorted(patron_semanal['anio_concepcion'].unique()):
+    datos = patron_semanal[
+        patron_semanal['anio_concepcion'] == anio
+    ].sort_values('semana_concepcion')
 
-#     plt.plot(
-#         datos['semana_concepcion'],
-#         datos['cantidad'],
-#         marker='o',
-#         label=str(anio)
-#     )
+    plt.plot(
+        datos['semana_concepcion'],
+        datos['cantidad'],
+        marker='o',
+        label=str(anio)
+    )
 
-# plt.title('Concepciones estimadas por semana del año')
-# plt.xlabel('Semana')
-# plt.ylabel('Cantidad de concepciones')
-# plt.xticks(range(1, 54, 2))
-# plt.grid(True, alpha=0.3)
-# plt.legend(title='Año')
-# plt.show()
+# Navidad y Año Nuevo
+plt.axvspan(51, 53, alpha=0.15, label='Navidad-Año Nuevo')
+plt.axvspan(1, 2, alpha=0.15)
+
+# Semana Santa (aproximada)
+plt.axvspan(12, 16, alpha=0.15, label='Semana Santa')
+
+# Vacaciones mitad de año
+plt.axvspan(24, 29, alpha=0.15, label='Vacaciones mitad de año')
+
+# Ferias y Fiestas de San Gil
+plt.axvspan(44, 45, alpha=0.15, label='Ferias San Gil')
+
+
+plt.title('Concepciones estimadas por semana del año')
+plt.xlabel('Semana')
+plt.ylabel('Cantidad de concepciones')
+plt.xticks(range(1, 54, 2))
+plt.grid(True, alpha=0.3)
+plt.legend(title='Año')
+plt.show()
 
 print(borns.info())
+borns.to_csv("nacidos_vivos_limpio.csv", index=False, encoding="utf-8-sig")
 # print(borns['Peso'].value_counts())
 # print(borns['Periodo'].value_counts())
 #print(borns['EPS'].unique())
