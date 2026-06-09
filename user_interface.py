@@ -1,5 +1,8 @@
 import pandas as pd
+import os
 import matplotlib.pyplot as plt
+
+
 
 BORN_LIVE_FILE = "nacidos_vivos.csv"
 
@@ -182,41 +185,72 @@ patron_semanal = (
 )
 
 
-plt.figure(figsize=(16, 7))
-
-for anio in sorted(patron_semanal['anio_concepcion'].unique()):
-    datos = patron_semanal[
-        patron_semanal['anio_concepcion'] == anio
-    ].sort_values('semana_concepcion')
-
-    plt.plot(
-        datos['semana_concepcion'],
-        datos['cantidad'],
-        marker='o',
-        label=str(anio)
-    )
-
-# Navidad y Año Nuevo
-plt.axvspan(51, 53, alpha=0.15, label='Navidad-Año Nuevo')
-plt.axvspan(1, 2, alpha=0.15)
-
-# Semana Santa (aproximada)
-plt.axvspan(12, 16, alpha=0.15, label='Semana Santa')
-
-# Vacaciones mitad de año
-plt.axvspan(24, 29, alpha=0.15, label='Vacaciones mitad de año')
-
-# Ferias y Fiestas de San Gil
-plt.axvspan(44, 45, alpha=0.15, label='Ferias San Gil')
 
 
-plt.title('Concepciones estimadas por semana del año')
-plt.xlabel('Semana')
-plt.ylabel('Cantidad de concepciones')
-plt.xticks(range(1, 54, 2))
-plt.grid(True, alpha=0.3)
-plt.legend(title='Año')
-plt.show()
+def generar_scatter_df(
+    df,
+    columna_x,
+    columna_y,
+    ruta_archivo,
+    titulo=None
+):
+    fig, ax = plt.subplots()
+
+    ax.scatter(df[columna_x], df[columna_y])
+
+    ax.set_xlabel(columna_x)
+    ax.set_ylabel(columna_y)
+
+    if titulo:
+        ax.set_title(titulo)
+
+    fig.savefig(ruta_archivo, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+generar_scatter_df(
+    df=borns,
+    columna_x="Tiempo_Gestación",
+    columna_y="Peso",
+    ruta_archivo="Graficas"+"/scatter_gestacion_peso.png",
+    titulo="Tiempo de Gestación vs Peso"
+)
+
+
+# plt.figure(figsize=(16, 7))
+
+# for anio in sorted(patron_semanal['anio_concepcion'].unique()):
+#     datos = patron_semanal[
+#         patron_semanal['anio_concepcion'] == anio
+#     ].sort_values('semana_concepcion')
+
+#     plt.plot(
+#         datos['semana_concepcion'],
+#         datos['cantidad'],
+#         marker='o',
+#         label=str(anio)
+#     )
+
+# # Navidad y Año Nuevo
+# plt.axvspan(51, 53, alpha=0.15, label='Navidad-Año Nuevo')
+# plt.axvspan(1, 2, alpha=0.15)
+
+# # Semana Santa (aproximada)
+# plt.axvspan(12, 16, alpha=0.15, label='Semana Santa')
+
+# # Vacaciones mitad de año
+# plt.axvspan(24, 29, alpha=0.15, label='Vacaciones mitad de año')
+
+# # Ferias y Fiestas de San Gil
+# plt.axvspan(44, 45, alpha=0.15, label='Ferias San Gil')
+
+
+# plt.title('Concepciones estimadas por semana del año')
+# plt.xlabel('Semana')
+# plt.ylabel('Cantidad de concepciones')
+# plt.xticks(range(1, 54, 2))
+# plt.grid(True, alpha=0.3)
+# plt.legend(title='Año')
+# plt.show()
 
 print(borns.info())
 borns.to_csv("nacidos_vivos_limpio.csv", index=False, encoding="utf-8-sig")
