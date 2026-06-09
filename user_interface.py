@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 
-
+#solana
 
 BORN_LIVE_FILE = "nacidos_vivos.csv"
 
@@ -35,6 +35,9 @@ def validate_structure(df, required_columns):
         raise ValueError(
             f"Columnas faltantes: {sorted(missing)}"
         )
+    
+    #Edward Perea
+    
 
 # Definimos las columnas de texto para que pandas las lea como string, ya que por defecto las lee como object, lo que puede generar problemas al momento de hacer
 # análisis de datos.
