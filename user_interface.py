@@ -37,7 +37,7 @@ def validate_structure(df, required_columns):
         )
     
     #Edward Perea
-    
+
 
 # Definimos las columnas de texto para que pandas las lea como string, ya que por defecto las lee como object, lo que puede generar problemas al momento de hacer
 # análisis de datos.
@@ -219,41 +219,41 @@ generar_scatter_df(
 )
 
 
-# plt.figure(figsize=(16, 7))
+plt.figure(figsize=(16, 7))
 
-# for anio in sorted(patron_semanal['anio_concepcion'].unique()):
-#     datos = patron_semanal[
-#         patron_semanal['anio_concepcion'] == anio
-#     ].sort_values('semana_concepcion')
+for anio in sorted(patron_semanal['anio_concepcion'].unique()):
+    datos = patron_semanal[
+        patron_semanal['anio_concepcion'] == anio
+    ].sort_values('semana_concepcion')
 
-#     plt.plot(
-#         datos['semana_concepcion'],
-#         datos['cantidad'],
-#         marker='o',
-#         label=str(anio)
-#     )
+    plt.plot(
+        datos['semana_concepcion'],
+        datos['cantidad'],
+        marker='o',
+        label=str(anio)
+    )
 
-# # Navidad y Año Nuevo
-# plt.axvspan(51, 53, alpha=0.15, label='Navidad-Año Nuevo')
-# plt.axvspan(1, 2, alpha=0.15)
+# Navidad y Año Nuevo
+plt.axvspan(51, 53, alpha=0.15, label='Navidad-Año Nuevo')
+plt.axvspan(1, 2, alpha=0.15)
 
-# # Semana Santa (aproximada)
-# plt.axvspan(12, 16, alpha=0.15, label='Semana Santa')
+# Semana Santa (aproximada)
+plt.axvspan(12, 16, alpha=0.15, label='Semana Santa')
 
-# # Vacaciones mitad de año
-# plt.axvspan(24, 29, alpha=0.15, label='Vacaciones mitad de año')
+# Vacaciones mitad de año
+plt.axvspan(24, 29, alpha=0.15, label='Vacaciones mitad de año')
 
-# # Ferias y Fiestas de San Gil
-# plt.axvspan(44, 45, alpha=0.15, label='Ferias San Gil')
+# Ferias y Fiestas de San Gil
+plt.axvspan(44, 45, alpha=0.15, label='Ferias San Gil')
 
 
-# plt.title('Concepciones estimadas por semana del año')
-# plt.xlabel('Semana')
-# plt.ylabel('Cantidad de concepciones')
-# plt.xticks(range(1, 54, 2))
-# plt.grid(True, alpha=0.3)
-# plt.legend(title='Año')
-# plt.show()
+plt.title('Concepciones estimadas por semana del año')
+plt.xlabel('Semana')
+plt.ylabel('Cantidad de concepciones')
+plt.xticks(range(1, 54, 2))
+plt.grid(True, alpha=0.3)
+plt.legend(title='Año')
+plt.show()
 
 print(borns.info())
 borns.to_csv("nacidos_vivos_limpio.csv", index=False, encoding="utf-8-sig")
