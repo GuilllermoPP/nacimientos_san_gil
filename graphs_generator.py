@@ -289,6 +289,111 @@ def generate_bar_plot(
 
 
 # ==========================================================
+# GRÁFICO DE BARRAS AGRUPADOS
+# ==========================================================
+
+def generate_grouped_bar_plot(
+    dataframe: pd.DataFrame,
+    category_column_1: str,
+    category_column_2: str,
+    normalize: bool = False,
+    title: str = None
+) -> None:
+    """
+    Genera gráfico de barras agrupadas
+    entre dos variables categóricas.
+
+    Parámetros:
+    ----------
+    category_column_1:
+        Categoría principal
+        (eje X).
+
+    category_column_2:
+        Categorías agrupadas
+        dentro de cada barra.
+
+    normalize:
+        Si True, muestra proporciones
+        porcentuales en lugar de
+        frecuencias absolutas.
+    """
+
+    figure, axis = plt.subplots(
+        figsize=(12, 6)
+    )
+
+    # -----------------------------------------
+    # TABLA DE CONTINGENCIA
+    # -----------------------------------------
+
+    result = pd.crosstab(
+        dataframe[
+            category_column_1
+        ],
+        dataframe[
+            category_column_2
+        ],
+        normalize="index"
+        if normalize
+        else False
+    )
+
+    # Convertir a porcentaje
+    if normalize:
+
+        result *= 100
+
+    # -----------------------------------------
+    # GRÁFICA
+    # -----------------------------------------
+
+    result.plot.bar(
+        ax=axis
+    )
+
+    axis.set_xlabel(
+        category_column_1
+    )
+
+    axis.set_ylabel(
+        "Porcentaje"
+        if normalize
+        else "Frecuencia"
+    )
+
+    axis.tick_params(
+        axis="x",
+        rotation=45
+    )
+
+    axis.legend(
+        title=category_column_2
+    )
+
+    if title:
+
+        axis.set_title(
+            title
+        )
+
+    file_name = (
+        f"grouped_bar_"
+        f"{category_column_1}_"
+        f"{category_column_2}.png"
+
+    )
+
+    save_figure(
+        figure,
+        file_name
+    )
+
+
+
+
+
+# ==========================================================
 # GRÁFICO DE CAJA Y BIGOTES
 # ==========================================================
 
@@ -467,3 +572,25 @@ if __name__ == "__main__":
         category_column="Régimen_Seguridad_Social"
     )
 
+    generate_scatter_plot(
+        borns,
+        x_column="Edad_Madre",
+        y_column="INDICE_PONDERAL",
+        
+        title="Gestación vs IP por Rango edad materna"
+    )
+
+    generate_grouped_bar_plot(
+        dataframe=borns,
+        category_column_1="RANGO_EDAD_MATERNA",
+        category_column_2="CATEGORIA_INDICE_PONDERAL",
+        title="Índice ponderal por rango de edad materna"
+    )
+
+    generate_grouped_bar_plot(
+    dataframe=borns,
+    category_column_1="RANGO_EDAD_MATERNA",
+    category_column_2="CATEGORIA_INDICE_PONDERAL",
+    normalize=True,
+    title="Distribución porcentual del índice ponderal por edad materna"
+    )
