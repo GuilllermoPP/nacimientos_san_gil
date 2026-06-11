@@ -1,4 +1,44 @@
 from business_logic import *
+import os
+
+def clear_screen() -> None:
+    """
+    Limpia la consola de Windows.
+    """
+
+    os.system("cls")
+
+
+def continue_program() -> bool:
+    """
+    Pregunta al usuario si desea
+    realizar otra consulta.
+    """
+
+    while True:
+
+        answer = input(
+            "\n¿Desea realizar otra consulta?\n"
+            "1. Sí\n"
+            "0. No\n"
+            "Seleccione una opción: "
+        )
+
+        if answer == "1":
+
+            clear_screen()
+
+            return True
+
+        elif answer == "0":
+
+            return False
+
+        else:
+
+            print(
+                "\nOpción no válida."
+            )
 
 # ==========================================================
 # FUNCIÓN PARA MOSTRAR EL MENÚ
@@ -9,6 +49,8 @@ def show_menu() -> None:
     Muestra todas las opciones
     disponibles para el usuario.
     """
+
+    clear_screen()
 
     print("\n")
     print("=" * 50)
@@ -47,6 +89,8 @@ def show_menu() -> None:
     print("\n0. Salir")
 
     print("=" * 50)
+
+
 
 
 # ==========================================================
@@ -353,6 +397,20 @@ try:
             print(
                 "\nOpción no válida."
             )
+
+            continue
+
+        # ==================================================
+        # CONTINUAR O FINALIZAR
+        # ==================================================
+
+        if not continue_program():
+
+            print(
+                "\nPrograma finalizado."
+            )
+
+            break
 
 except Exception as error:
 
