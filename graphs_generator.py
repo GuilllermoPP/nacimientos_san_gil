@@ -591,6 +591,6 @@ if __name__ == "__main__":
     dataframe=borns,
     category_column_1="RANGO_EDAD_MATERNA",
     category_column_2="CATEGORIA_INDICE_PONDERAL",
-    normalize=True,
+    
     title="Distribución porcentual del índice ponderal por edad materna"
     )

@@ -161,8 +161,9 @@ def clean_data(
         dataframe["Peso"]
         .astype(str)
         .str.replace(",", ".")
-        .astype("float64")
+        
     )
+    dataframe["Peso"] = pd.to_numeric(dataframe["Peso"], errors="coerce")
 
     dataframe["Periodo"] = (
         dataframe["Periodo"]
@@ -252,16 +253,16 @@ def clean_data(
     )
 
     # ------------------------------------------------------
-    # Índice ponderal neonatal
+    # Índice ponderal neonatal   el peso tinee que estar en gramos y la talla en centimetros
     # ------------------------------------------------------
 
     dataframe[
         "INDICE_PONDERAL"
     ] = (
-        dataframe["Peso"] * 100
+        dataframe["Peso"] 
     ) / (
-        dataframe["Talla"] ** 3
-    )
+        (dataframe["Talla"]) ** 3
+    )*100000
 
     # ------------------------------------------------------
     # Clasificación del índice ponderal
