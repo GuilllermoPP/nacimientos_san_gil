@@ -201,10 +201,12 @@ def generate_bar_plot(
     category_column: str,
     value_column: str = None,
     aggregation: str = "count",
-    title: str = None
+    title: str = None,
+    show_labels: bool = True
 ) -> None:
     """
-    Genera gráfico de barras.
+    Genera gráfico de barras
+    con etiquetas de datos.
     """
 
     figure, axis = plt.subplots(
@@ -259,9 +261,40 @@ def generate_bar_plot(
                 "Agregación inválida."
             )
 
+    # Crear gráfico
     result.plot.bar(
         ax=axis
     )
+
+    # -----------------------------------------
+    # ETIQUETAS DE DATOS
+    # -----------------------------------------
+
+    if show_labels:
+
+        for container in axis.containers:
+
+            # Formato automático
+            if aggregation in [
+                "mean",
+                "median"
+            ]:
+                labels = [
+                    f"{v:.2f}"
+                    for v in result.values
+                ]
+
+            else:
+                labels = [
+                    f"{int(v):,}"
+                    for v in result.values
+                ]
+
+            axis.bar_label(
+                container,
+                labels=labels,
+                padding=3
+            )
 
     axis.set_xlabel(
         category_column
@@ -276,6 +309,8 @@ def generate_bar_plot(
         axis.set_title(
             title
         )
+
+    figure.tight_layout()
 
     file_name = (
         f"bar_"
@@ -297,7 +332,8 @@ def generate_grouped_bar_plot(
     category_column_1: str,
     category_column_2: str,
     normalize: bool = False,
-    title: str = None
+    title: str = None,
+    show_labels: bool = True
 ) -> None:
     """
     Genera gráfico de barras agrupadas
@@ -317,6 +353,10 @@ def generate_grouped_bar_plot(
         Si True, muestra proporciones
         porcentuales en lugar de
         frecuencias absolutas.
+
+    show_labels:
+        Si True, agrega etiquetas
+        sobre cada barra.
     """
 
     figure, axis = plt.subplots(
@@ -352,6 +392,43 @@ def generate_grouped_bar_plot(
         ax=axis
     )
 
+    # -----------------------------------------
+    # ETIQUETAS DE DATOS
+    # -----------------------------------------
+
+    if show_labels:
+
+        for container in axis.containers:
+
+            labels = []
+
+            for bar in container:
+
+                value = bar.get_height()
+
+                # Ocultar ceros
+                if value == 0:
+                    labels.append("")
+
+                # Porcentaje
+                elif normalize:
+                    labels.append(
+                        f"{value:.1f}%"
+                    )
+
+                # Frecuencia
+                else:
+                    labels.append(
+                        f"{int(value):,}"
+                    )
+
+            axis.bar_label(
+                container,
+                labels=labels,
+                padding=3,
+                fontsize=8
+            )
+
     axis.set_xlabel(
         category_column_1
     )
@@ -377,18 +454,19 @@ def generate_grouped_bar_plot(
             title
         )
 
+    figure.tight_layout()
+
     file_name = (
         f"grouped_bar_"
         f"{category_column_1}_"
-        f"{category_column_2}.png"
-
+        f"{category_column_2}_"
+        f"normalize_{normalize}.png"
     )
 
     save_figure(
         figure,
         file_name
     )
-
 
 
 
@@ -464,17 +542,40 @@ def generate_boxplot_horizontal(
     dataframe: pd.DataFrame,
     numeric_column: str,
     category_column: str = None,
-    title: str = None
+    title: str = None,
+    ascending: bool = True
 ) -> None:
     """
-    Genera gráfico de caja
-    y bigotes horizontal.
+    Genera gráfico de caja y bigotes horizontal,
+    ordenado por el promedio de la variable numérica.
+    
+    Parameters
+    ----------
+    ascending : bool
+        True = menor a mayor promedio
+        False = mayor a menor promedio
     """
 
+    df = dataframe.copy()
+
+    # Ordenar categorías por promedio
+    category_order = (
+        df.groupby(category_column)[numeric_column]
+        .mean()
+        .sort_values(ascending=ascending)
+        .index
+    )
+
+    # Convertir a categoría ordenada
+    df[category_column] = pd.Categorical(
+        df[category_column],
+        categories=category_order,
+        ordered=True
+    )
+
     num_categories = (
-        dataframe[
-            category_column
-        ].nunique()
+        df[category_column]
+        .nunique()
     )
 
     figure, axis = plt.subplots(
@@ -487,7 +588,7 @@ def generate_boxplot_horizontal(
         )
     )
 
-    dataframe.boxplot(
+    df.boxplot(
         column=numeric_column,
         by=category_column,
         ax=axis,
@@ -505,7 +606,6 @@ def generate_boxplot_horizontal(
     )
 
     if title:
-
         axis.set_title(
             title
         )
@@ -520,7 +620,6 @@ def generate_boxplot_horizontal(
         figure,
         file_name
     )
-
 
 
 
@@ -563,7 +662,9 @@ if __name__ == "__main__":
     generate_boxplot_horizontal(
         borns,
         numeric_column="Número_Consultas_Prenatales",
-        category_column="EPS_NORMALIZADA"
+        category_column="EPS_NORMALIZADA",
+        title="EPS y controles prenatales",
+        ascending=True
     )
 
     generate_boxplot_vertical(
