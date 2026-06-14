@@ -406,6 +406,9 @@ def generate_conception_pattern_graph(
 
     plt.figure(figsize=(16, 7))
 
+    # ==========================
+    # Líneas por año
+    # ==========================
     for year in sorted(
         conception_pattern[
             "anio_concepcion"
@@ -431,40 +434,60 @@ def generate_conception_pattern_graph(
             label=str(year)
         )
 
-    plt.axvspan(
-        51,
-        53,
-        alpha=0.15,
-        label="Navidad-Año Nuevo"
-    )
+    # ==========================
+    # Eventos resaltados
+    # ==========================
+    highlighted_periods = [
+        {
+            "start": 51,
+            "end": 53,
+            "label": "Navidad - Año Nuevo",
+            "color": "red"
+        },
+        {
+            "start": 1,
+            "end": 2,
+            "label": None,
+            "color": "red"
+        },
+        {
+            "start": 12,
+            "end": 16,
+            "label": "Semana Santa",
+            "color": "gold"
+        },
+        {
+            "start": 24,
+            "end": 29,
+            "label": "Vacaciones mitad de año",
+            "color": "green"
+        },
+        {
+            "start": 37,
+            "end": 38,
+            "label": "Amor y Amistad",
+            "color": "purple"
+        },
+        {
+            "start": 44,
+            "end": 45,
+            "label": "Ferias San Gil",
+            "color": "orange"
+        }
+    ]
 
-    plt.axvspan(
-        1,
-        2,
-        alpha=0.15
-    )
+    for period in highlighted_periods:
+        plt.axvspan(
+            period["start"],
+            period["end"],
+            color=period["color"],
+            alpha=0.15,
+            label=period["label"]
+        )
 
-    plt.axvspan(
-        12,
-        16,
-        alpha=0.15,
-        label="Semana Santa"
-    )
-
-    plt.axvspan(
-        24,
-        29,
-        alpha=0.15,
-        label="Vacaciones mitad de año"
-    )
-
-    plt.axvspan(
-        44,
-        45,
-        alpha=0.15,
-        label="Ferias San Gil"
-    )
-
+    # ==========================
+    # Configuración gráfica
+    # ==========================
     plt.title(
         "Concepciones estimadas por semana del año"
     )
@@ -487,7 +510,11 @@ def generate_conception_pattern_graph(
     )
 
     plt.legend(
-        title="Año"
+        title="Año",
+        bbox_to_anchor=(1.02, 1),
+        loc="upper left"
     )
+
+    plt.tight_layout()
 
     plt.show()
