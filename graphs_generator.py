@@ -622,6 +622,161 @@ def generate_boxplot_horizontal(
     )
 
 
+# ==========================================================
+# GRÁFICO DE CONCEPCIONES POR SEMANA DEL AÑO
+# ==========================================================
+
+
+def generate_conception_pattern_graph(
+    dataframe: pd.DataFrame
+) -> None:
+    """
+    Genera la gráfica de
+    concepciones estimadas
+    por semana del año.
+    """
+
+    conception_pattern = (
+        dataframe
+        .groupby(
+            [
+                "anio_concepcion",
+                "semana_concepcion"
+            ]
+        )
+        .size()
+        .reset_index(
+            name="cantidad"
+        )
+    )
+
+    figure, axis = plt.subplots(
+        figsize=(16, 7)
+    )
+
+    # ==========================
+    # Líneas por año
+    # ==========================
+
+    for year in sorted(
+        conception_pattern[
+            "anio_concepcion"
+        ].unique()
+    ):
+
+        year_data = conception_pattern[
+            conception_pattern[
+                "anio_concepcion"
+            ] == year
+        ].sort_values(
+            "semana_concepcion"
+        )
+
+        axis.plot(
+            year_data[
+                "semana_concepcion"
+            ],
+            year_data[
+                "cantidad"
+            ],
+            marker="o",
+            label=str(year)
+        )
+
+    # ==========================
+    # Eventos resaltados
+    # ==========================
+
+    highlighted_periods = [
+        {
+            "start": 51,
+            "end": 53,
+            "label": "Navidad - Año Nuevo",
+            "color": "red"
+        },
+        {
+            "start": 1,
+            "end": 2,
+            "label": None,
+            "color": "red"
+        },
+        {
+            "start": 12,
+            "end": 16,
+            "label": "Semana Santa",
+            "color": "gold"
+        },
+        {
+            "start": 24,
+            "end": 29,
+            "label": "Vacaciones mitad de año",
+            "color": "green"
+        },
+        {
+            "start": 37,
+            "end": 38,
+            "label": "Amor y Amistad",
+            "color": "purple"
+        },
+        {
+            "start": 44,
+            "end": 45,
+            "label": "Ferias San Gil",
+            "color": "orange"
+        }
+    ]
+
+    for period in highlighted_periods:
+
+        axis.axvspan(
+            period["start"],
+            period["end"],
+            color=period["color"],
+            alpha=0.15,
+            label=period["label"]
+        )
+
+    # ==========================
+    # Configuración gráfica
+    # ==========================
+
+    axis.set_title(
+        "Concepciones estimadas "
+        "por semana del año"
+    )
+
+    axis.set_xlabel(
+        "Semana"
+    )
+
+    axis.set_ylabel(
+        "Cantidad de concepciones"
+    )
+
+    axis.set_xticks(
+        range(1, 54, 2)
+    )
+
+    axis.grid(
+        True,
+        alpha=0.3
+    )
+
+    axis.legend(
+        title="Año",
+        bbox_to_anchor=(1.02, 1),
+        loc="upper left"
+    )
+
+    figure.tight_layout()
+
+    save_figure(
+        figure,
+        "concepciones_por_semana.png"
+    )
+
+
+
 
 # ==========================================================
 # EJEMPLO DE USO
@@ -640,6 +795,14 @@ if __name__ == "__main__":
         title="Tiempo de Gestación vs Peso"
     )
 
+
+    generate_scatter_plot(
+        borns,
+        x_column="Tiempo_Gestación",
+        y_column="INDICE_PONDERAL",
+        title="Tiempo de Gestación vs IP"
+    )
+
     generate_grouped_scatter_plot(
         borns,
         x_column="Tiempo_Gestación",
@@ -647,6 +810,15 @@ if __name__ == "__main__":
         category_column="RANGO_EDAD_MATERNA",
         title="Gestación vs Peso por Rango edad materna"
     )
+
+    generate_grouped_scatter_plot(
+        borns,
+        x_column="Tiempo_Gestación",
+        y_column="INDICE_PONDERAL",
+        category_column="RANGO_EDAD_MATERNA",
+        title="Gestación vs IP por Rango edad materna"
+    )
+
 
     generate_bar_plot(
         borns,
@@ -688,10 +860,16 @@ if __name__ == "__main__":
         title="Índice ponderal por rango de edad materna"
     )
 
+
     generate_grouped_bar_plot(
     dataframe=borns,
     category_column_1="RANGO_EDAD_MATERNA",
     category_column_2="CATEGORIA_INDICE_PONDERAL",
     
-    title="Distribución porcentual del índice ponderal por edad materna"
+    title="Distribución porcentual del índice ponderal por edad materna",
+    normalize=True
     )
+
+    generate_conception_pattern_graph(
+        dataframe=borns
+        )
