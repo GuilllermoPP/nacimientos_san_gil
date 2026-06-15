@@ -171,7 +171,6 @@ def clean_data(
         .str.replace(",", "")
         .astype("int64")
     )
-
     # ------------------------------------------------------
     # Conversión de talla
     # ------------------------------------------------------
@@ -186,6 +185,7 @@ def clean_data(
         dataframe["Talla"],
         errors="coerce"
     )
+
 
     # ------------------------------------------------------
     # Normalización de EPS
