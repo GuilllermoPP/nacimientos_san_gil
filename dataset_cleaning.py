@@ -173,6 +173,21 @@ def clean_data(
     )
 
     # ------------------------------------------------------
+    # Conversión de talla
+    # ------------------------------------------------------
+
+    dataframe["Talla"] = (
+        dataframe["Talla"]
+        .astype(str)
+        .str.replace(",", ".")
+    )
+
+    dataframe["Talla"] = pd.to_numeric(
+        dataframe["Talla"],
+        errors="coerce"
+    )
+
+    # ------------------------------------------------------
     # Normalización de EPS
     # ------------------------------------------------------
 
@@ -180,7 +195,9 @@ def clean_data(
         dataframe["EPS"]
         .replace(EPS_MAPPING)
     )
-
+# ------------------------------------------------------
+# Enriquezamiento de datos - creación de nuevas columnas a partir de las existentes
+# ------------------------------------------------------
     # ------------------------------------------------------
     # Rango de edad materna
     # ------------------------------------------------------
@@ -237,20 +254,7 @@ def clean_data(
         right=False
     )
 
-    # ------------------------------------------------------
-    # Conversión de talla
-    # ------------------------------------------------------
 
-    dataframe["Talla"] = (
-        dataframe["Talla"]
-        .astype(str)
-        .str.replace(",", ".")
-    )
-
-    dataframe["Talla"] = pd.to_numeric(
-        dataframe["Talla"],
-        errors="coerce"
-    )
 
     # ------------------------------------------------------
     # Índice ponderal neonatal   el peso tinee que estar en gramos y la talla en centimetros
